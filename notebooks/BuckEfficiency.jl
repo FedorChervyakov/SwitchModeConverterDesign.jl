@@ -21,7 +21,7 @@ end
 # ╔═╡ cce705a0-f7f2-11eb-0113-fb4bb3b8fc76
 md"""
 # Buck efficiency
-Assuming small ripple and steady state, unless specified otherwise.
+Assuming small ripple, CCM, and steady state conditions, unless specified otherwise.
 """
 
 # ╔═╡ d6ae6ba1-1d0d-45f8-908b-c5b1060bb30a
@@ -43,7 +43,9 @@ nu_RL(D, RL, R) = 1 / (1+RL/R)
 D = 0:0.5e-2:1
 
 # ╔═╡ 9dd4d83a-11b6-4189-94da-ab954830a80e
-@bind rl_rat Slider(0:0.1:1, show_value=true)
+md"""
+``\frac{R_L}{R}`` : $(@bind rl_rat Slider(0:0.1:1, show_value=true))
+"""
 
 # ╔═╡ bcdbcd67-5e38-48bb-810a-539deb743b05
 begin
@@ -64,6 +66,11 @@ begin
 	plot(nu_rl, m_rl, layout=(2,1))
 end
 
+# ╔═╡ 1b8462f7-6011-4103-b926-dce0f63d5fbf
+md"""
+Losses due to inductor's $R_L$ are independent of duty cycle.
+"""
+
 # ╔═╡ a383c267-e9c9-4848-bfbb-226bd0b82b76
 md"""
 ### Semiconductor Conduction Losses
@@ -76,7 +83,9 @@ Since MOSFET conducts only during DT, loss due to it's ON resistance is proporti
 nu_RON(D, R_ON, R) = 1 / (1 + R_ON/R*D)
 
 # ╔═╡ 3e229b7d-9eaa-430b-aa75-7092697b4b2b
-@bind ron_rat Slider(0:0.1:1, show_value=true)
+md"""
+``\frac{R_{ON}}{R}`` : $(@bind ron_rat Slider(0:0.1:1, show_value=true))
+"""
 
 # ╔═╡ abb257fb-5875-49bb-b60f-56c100f772c5
 begin
@@ -97,6 +106,11 @@ begin
 	plot(nu_ron_plt, m_ron_plt, layout=(2,1))
 end
 
+# ╔═╡ e2431aa5-f837-4ff3-98f7-142b8526ce17
+md"""
+Losses due to MOSFET's ``R_{ON}`` reduce efficiency at high duty-cycles.
+"""
+
 # ╔═╡ 0cb9c78f-4afb-4397-ad24-d3e5560ed2fa
 md"""
 #### Loss due to diode's ON resistance and forward voltage drop
@@ -112,19 +126,9 @@ end
 
 # ╔═╡ 84562416-c1b5-4b3e-940b-cd7867072210
 md"""
-$\frac{V_D}{V_g}$
+``\frac{V_D}{V_g}`` : $(@bind vd_rat Slider(0:0.025:1, show_value=true)); 
+``\frac{R_D}{R}`` : $(@bind rd_rat Slider(0:0.1:1, show_value=true))
 """
-
-# ╔═╡ 07b41a7e-40e9-471b-9627-882424acbdcd
-@bind vd_rat Slider(0:0.025:1, show_value=true)
-
-# ╔═╡ efe4d2e6-eb28-4465-a9bb-b6b1259f61ff
-md"""
-$\frac{R_D}{R}$
-"""
-
-# ╔═╡ f7bb5249-9f8c-45a3-aad8-f1d68c30d1df
-@bind rd_rat Slider(0:0.1:1, show_value=true)
 
 # ╔═╡ f452c213-bf6b-47c0-b1fd-6c83dc94d3ec
 begin
@@ -145,6 +149,11 @@ begin
 	plot(nu_diode_plt, m_diode_plt, layout=(2,1))
 end
 
+# ╔═╡ 8fa578dc-9f53-4b0b-85c4-34e6dfc5a75c
+md"""
+``V_D`` determines limits minimal operational duty-cycle of a buck converter. Losses due to $R_D$ and $V_D$ reduce efficiency at lower duty-cycles as D′ is bigger than D when D < 0.5.
+"""
+
 # ╔═╡ 2d4ba5de-0578-480c-97a5-e191debd1829
 md"""
 ### All together now
@@ -154,37 +163,13 @@ Including conduction losses due to Rd, Vd, Ron, RL
 # ╔═╡ 340f2411-e853-4bb3-86ed-6433b12d96b5
 nu_cond(D, Vd, Vg, RL, RON, RD, R) = nu_RL(D, RL, R) * nu_RON(D, RON, R) * nu_diode(D, Vd, Vg, RD, R)
 
-# ╔═╡ 2125a537-c41b-462d-b0bd-8027b0a2b098
-md"""
-``\frac{V_D}{V_g}``
-"""
-
-# ╔═╡ 29b477e7-d311-4312-83b4-f985864fb85d
-@bind Vd Slider(0:0.01:0.5, show_value=true)
-
-# ╔═╡ d4f3cfc6-0d29-45ef-b935-5f7292e473ad
-md"""
-``\frac{R_L}{R}``
-"""
-
-# ╔═╡ c8e66a9f-c05d-444f-8835-5d6a242bf6be
-@bind RL Slider(0:0.01:0.5, show_value=true)
-
 # ╔═╡ 9555025e-d5b9-40a9-bfe9-df6510569084
 md"""
-``\frac{R_d}{R}``
+``\frac{V_D}{V_g}`` : $(@bind Vd Slider(0:0.01:0.5, show_value=true)); 
+``\frac{R_L}{R}`` : $(@bind RL Slider(0:0.01:0.5, show_value=true)) \
+``\frac{R_d}{R}`` : $(@bind RD Slider(0:0.01:0.5, show_value=true)); 
+``\frac{R_{ON}}{R}`` : $(@bind RON Slider(0:0.01:0.5, show_value=true))
 """
-
-# ╔═╡ 65c90609-6987-4600-9bb4-48b7d6aa9d8d
-@bind RD Slider(0:0.01:0.5, show_value=true)
-
-# ╔═╡ daa4b28b-aca7-4e8a-9e14-078a475fa2cf
-md"""
-``\frac{R_{ON}}{R}``
-"""
-
-# ╔═╡ 0466c3d2-c28f-468a-8ca7-b9e1fea30bc7
-@bind RON Slider(0:0.01:0.5, show_value=true)
 
 # ╔═╡ 6a8b6833-3d96-48b1-b694-39c3c25b684c
 begin
@@ -204,6 +189,46 @@ begin
 	)
 	plot(nu_cond_plt, m_cond_plt, layout=(2,1))
 end
+
+# ╔═╡ 920f975a-5f1c-458f-9e4a-db37d6e2b229
+md"""
+### Synchronous Buck
+Vd and Rd are replaced by Ron2.
+"""
+
+# ╔═╡ b3eff9c0-1092-4a84-a7fd-68b013a5056a
+nu_cond_sync(D, RL, RON1, RON2, R) = nu_RL(D, RL, R) * nu_RON(D, RON1, R) * nu_RON(1-D, RON2, R)
+
+# ╔═╡ 37aa5097-601e-4521-8b04-758bd3b156d4
+md"""
+``\frac{R_L}{R}`` : $(@bind RLs Slider(0:0.01:0.5, show_value=true));
+``\frac{R_{ON 1}}{R}`` : $(@bind RON1 Slider(0:0.01:0.5, show_value=true));
+``\frac{R_{ON 2}}{R}`` : $(@bind RON2 Slider(0:0.01:0.5, show_value=true));
+"""
+
+# ╔═╡ 3264573a-7094-43f2-8481-5ffaea633bf8
+begin
+	nu_cond_sync_plt = plot(
+		D, nu_cond_sync.(D, Ref(RLs), Ref(RON1), Ref(RON2), 1),
+		ylim = (0, 1),
+		xlabel = "Duty-cycle D",
+		ylabel = "Efficiency η",
+		title = "efficiency",
+	)
+	m_cond_sync_plt = plot(
+		D, D.*nu_cond_sync.(D, Ref(RLs), Ref(RON1), Ref(RON2), 1),
+		ylim = (0, 1),
+		xlabel = "Duty-cycle D",
+		ylabel = "M(D)",
+		title = "Conversion ratio"
+	)
+	plot(nu_cond_sync_plt, m_cond_sync_plt, layout=(2,1))
+end
+
+# ╔═╡ 260d335f-f640-419e-ba4d-e5de735bbde9
+md"""
+Synchronous Buck has lower losses than conventional buck at lower duty-cycles.
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1035,29 +1060,27 @@ version = "0.9.1+5"
 # ╟─d6ae6ba1-1d0d-45f8-908b-c5b1060bb30a
 # ╠═47baaeda-a069-4c05-85ac-1de8de3596c2
 # ╟─99e81275-9550-4d44-be30-2d64fbdbb75d
-# ╠═9dd4d83a-11b6-4189-94da-ab954830a80e
+# ╟─9dd4d83a-11b6-4189-94da-ab954830a80e
 # ╟─bcdbcd67-5e38-48bb-810a-539deb743b05
+# ╟─1b8462f7-6011-4103-b926-dce0f63d5fbf
 # ╟─a383c267-e9c9-4848-bfbb-226bd0b82b76
 # ╠═ceffe59a-2ec9-40e6-8fc1-630b1a132d73
-# ╠═3e229b7d-9eaa-430b-aa75-7092697b4b2b
+# ╟─3e229b7d-9eaa-430b-aa75-7092697b4b2b
 # ╟─abb257fb-5875-49bb-b60f-56c100f772c5
+# ╟─e2431aa5-f837-4ff3-98f7-142b8526ce17
 # ╟─0cb9c78f-4afb-4397-ad24-d3e5560ed2fa
-# ╟─2183f050-ed07-41ed-b6c1-f0f3c0a20c77
+# ╠═2183f050-ed07-41ed-b6c1-f0f3c0a20c77
 # ╟─84562416-c1b5-4b3e-940b-cd7867072210
-# ╟─07b41a7e-40e9-471b-9627-882424acbdcd
-# ╟─efe4d2e6-eb28-4465-a9bb-b6b1259f61ff
-# ╟─f7bb5249-9f8c-45a3-aad8-f1d68c30d1df
 # ╟─f452c213-bf6b-47c0-b1fd-6c83dc94d3ec
+# ╟─8fa578dc-9f53-4b0b-85c4-34e6dfc5a75c
 # ╟─2d4ba5de-0578-480c-97a5-e191debd1829
 # ╠═340f2411-e853-4bb3-86ed-6433b12d96b5
-# ╟─2125a537-c41b-462d-b0bd-8027b0a2b098
-# ╟─29b477e7-d311-4312-83b4-f985864fb85d
-# ╟─d4f3cfc6-0d29-45ef-b935-5f7292e473ad
-# ╟─c8e66a9f-c05d-444f-8835-5d6a242bf6be
 # ╟─9555025e-d5b9-40a9-bfe9-df6510569084
-# ╟─65c90609-6987-4600-9bb4-48b7d6aa9d8d
-# ╟─daa4b28b-aca7-4e8a-9e14-078a475fa2cf
-# ╟─0466c3d2-c28f-468a-8ca7-b9e1fea30bc7
 # ╟─6a8b6833-3d96-48b1-b694-39c3c25b684c
+# ╟─920f975a-5f1c-458f-9e4a-db37d6e2b229
+# ╠═b3eff9c0-1092-4a84-a7fd-68b013a5056a
+# ╟─37aa5097-601e-4521-8b04-758bd3b156d4
+# ╟─3264573a-7094-43f2-8481-5ffaea633bf8
+# ╟─260d335f-f640-419e-ba4d-e5de735bbde9
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
